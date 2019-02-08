@@ -1,0 +1,167 @@
+package utilServlet;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+
+
+import javax.servlet.http.HttpSession;
+
+import javabeans.Person;
+import javabeans.Profile;
+import javabeans.User;
+import javabeans.UserInformation;
+import javabeans.Employee;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
+
+
+import java.sql.SQLException;
+import java.sql.Connection;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import sql.*;
+
+@WebServlet("/StaffLogin")
+public class ManagerLoginServlet extends HttpServlet{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	//Serialize
+	
+	public ManagerLoginServlet() {
+		super();
+	}
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+		//ServletOutputStream out = response.getOutputStream();
+		System.out.println("login here");
+		String contextPath = request.getContextPath();
+		
+		String mid = request.getParameter("ManagerID");
+		String password = request.getParameter("Password");
+		System.out.println("id is: " + mid);
+		System.out.println("password is: " + password);
+		//boolean submit1 = request.getParameter("Submit1") != null;
+		//User user = null;
+		
+		try{
+			System.out.println("before connect");
+			SqlConnection sqlCon = new SqlConnection();
+			sqlCon.readDatabase();
+			Connection conn = sqlCon.getConnected();
+			
+			System.out.println("before employee search");
+			Employee emp  = EmployeeData.searchEmployee(conn, mid);
+			
+			if (emp == null) {
+				System.out.println("in null");
+				response.sendRedirect(contextPath + "/UserNotFound.jsp");
+				return;
+			}
+			System.out.println("emp ssn is " + emp.getSSN());
+			Person per = UsersData.searchPerson(conn, emp.getSSN());
+			
+			
+			if (per != null){
+				
+				if (per.getpassword().equals(password)) {
+					System.out.println("after password check");
+					emp.setFirstName(per.getfirstName());
+					emp.setLastName(per.getLastName());
+					emp.setPassword(per.getpassword());
+					emp.setSSN(per.getSSN());
+					emp.setemail(per.getemail());
+					emp.setTelephone(per.gettelephone());
+					emp.setStreet(per.getStreet());
+					emp.setCity(per.getCity());
+					emp.setState(per.getState());
+					emp.setzip(per.getzip());
+					System.out.println("before session save");
+					HttpSession session = request.getSession(true);
+					System.out.println("point 0");
+					WebpgUtil.remeberEmployee(session, emp);
+					WebpgUtil.storeEmpyInCookie(response, emp);
+					System.out.println("after session save");
+					if(emp.getRole().equals("CustRep")) {
+						System.out.println("first name is: " + emp.getfirstName() +
+								"last name is: " + emp.getLastName()
+								+ "role is: " + emp.getRole() + 
+								"city is: " + emp.getCity());
+						WebpgUtil.setUserlevel(2);
+						
+						//Cookie employeeCookie = new Cookie("SSN", emp.getSSN());
+						//employeeCookie.setMaxAge(24 * 60 * 60);
+						//response.addCookie(employeeCookie);
+						
+						//Cookie roleCookie = new Cookie("role", "employee");
+						//roleCookie.setMaxAge(24 * 60 * 60);
+						//response.addCookie(roleCookie);
+						
+						UserInformation userInfo = new UserInformation(emp.getSSN(), "employee", null);
+						WebpgUtil.setUserInformation(userInfo);
+						
+						request.getRequestDispatcher("EmployeeProfile.jsp").forward(request, response);
+						return;
+						//response.sendRedirect("EmployeeProfile.jsp");
+					}
+					else {
+						System.out.println("manager");
+						WebpgUtil.setUserlevel(3);
+						
+						UserInformation userInfo = new UserInformation(emp.getSSN(), "manager", null);
+						System.out.println(userInfo.getRole());
+						WebpgUtil.setUserInformation(userInfo);
+						System.out.println(WebpgUtil.getUserInformation().getRole());
+						
+						response.sendRedirect(contextPath + "/ManagerProfile.jsp");
+						
+						//request.getRequestDispatcher("ManagerProfile.jsp").forward(request, response);
+						return;
+						//response.sendRedirect("ManagerProfile.jsp");
+					}
+					//response.sendRedirect(arg0);
+				}
+				else {
+					response.sendRedirect(contextPath + "/WrongPassword.jsp");
+					/*
+					PrintWriter output = response.getWriter();
+					response.setContentType("text/html");
+					output.println("<script type=\"text/javascript\">");
+					output.println("alert('Password Incorrect, Try Again!');");
+					output.println("/script");
+					*/
+				}
+				
+			}
+			else {
+				response.sendRedirect(contextPath + "/UserNotFound.jsp");
+				/*
+				PrintWriter output = response.getWriter();
+				response.setContentType("text/html");
+				output.println("<script type=\"text/javascript\">");
+				output.println("alert('Invalid SSN');");
+				output.println("/script");
+				*/
+			}
+			sqlCon.close();
+		}
+		catch(SQLException e) {
+			response.sendRedirect(contextPath + "/Error.jsp");
+		}
+		catch (Exception e) {
+			response.sendRedirect(contextPath + "/Error.jsp");
+		}
+		
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+}

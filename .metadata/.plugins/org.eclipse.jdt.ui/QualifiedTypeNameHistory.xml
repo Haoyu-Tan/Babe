@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="sql.UserData"/>
+<fullyQualifiedTypeName name="sql.SqlConnection"/>
+<fullyQualifiedTypeName name="sql.EmployeeData"/>
+<fullyQualifiedTypeName name="sql.DateInfo"/>
+<fullyQualifiedTypeName name="sql.CustViews"/>
+<fullyQualifiedTypeName name="javabeans.Profile"/>
+<fullyQualifiedTypeName name="java.util.Calendar"/>
+<fullyQualifiedTypeName name="javabeans.Account"/>
+<fullyQualifiedTypeName name="sql.UsersData"/>
+<fullyQualifiedTypeName name="javax.servlet.annotation.WebFilter"/>
+<fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
+<fullyQualifiedTypeName name="java.text.DateFormat"/>
+<fullyQualifiedTypeName name="java.util.Date"/>
+<fullyQualifiedTypeName name="javax.servlet.http.HttpServletResponse"/>
+<fullyQualifiedTypeName name="javax.servlet.http.Cookie"/>
+<fullyQualifiedTypeName name="sql.WebpgUtil"/>
+<fullyQualifiedTypeName name="javabeans.UserInformation"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+</qualifiedTypeNameHistroy>

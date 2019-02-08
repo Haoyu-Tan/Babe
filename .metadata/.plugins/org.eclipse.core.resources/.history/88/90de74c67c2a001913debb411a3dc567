@@ -1,0 +1,18 @@
+package javabeans;
+
+public class UserInformation {
+	private String SSN;
+	private String role;
+	private String profileName;
+	
+	public UserInformation() {
+		
+	}
+	
+	public String getSSN() {
+		return SSN;
+	}
+	public String getRole() {
+		return 
+	}
+}
